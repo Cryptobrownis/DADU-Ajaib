@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dadu surgawi</title>
+    <title>Ramalan Dadu Cinta Eksklusif</title>
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #2b1055 0%, #7597de 100%);
-            --gold-color: #ffd700;
-            --accent-pink: #ff4b72;
         }
 
         * {
@@ -60,39 +58,40 @@
             margin: auto 0;
         }
 
-        /* Area Papan Dadu 3D */
+        /* Area Papan Dadu 3D Sejati */
         .dice-board {
             display: flex;
-            gap: 40px;
+            gap: 45px;
             margin: 50px 0;
-            perspective: 900px;
+            perspective: 1000px; /* Memberikan efek kedalaman 3D ruang */
         }
 
-        /* Struktur Kubus Dadu Klasik */
+        /* Struktur Kubus Dadu 3D */
         .dice {
             width: 85px;
             height: 85px;
             position: relative;
             transform-style: preserve-3d;
-            /* Putaran diperlambat menjadi 2.2 detik dengan efek rem yang halus */
-            transition: transform 2.2s cubic-bezier(0.1, 0.8, 0.2, 1);
-            filter: drop-shadow(0 12px 20px rgba(0, 0, 0, 0.4));
+            transition: transform 2.2s cubic-bezier(0.15, 0.85, 0.25, 1);
+            will-change: transform;
         }
 
         .face {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 85px;
+            height: 85px;
             background: #fdfdfd;
-            border-radius: 16px; /* Bentuk sudut khas dadu asli */
-            box-shadow: inset 0 0 12px rgba(0,0,0,0.12);
+            border-radius: 16px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.15);
             display: grid;
             grid-template: repeat(3, 1fr) / repeat(3, 1fr);
             padding: 10px;
             border: 1px solid #dcdcdc;
+            backface-visibility: hidden; /* Mencegah tembus pandang agar bentuk 3D solid */
+            -webkit-backface-visibility: hidden;
         }
 
-        /* Posisi Sisi-sisi Kubus 3D (TranslateZ disesuaikan ukuran baru) */
+        /* Posisi Sisi-sisi Kubus 3D (Setengah dari lebar dadu = 42.5px) */
         .face-1 { transform: rotateY(0deg) translateZ(42.5px); }
         .face-2 { transform: rotateY(180deg) translateZ(42.5px); }
         .face-3 { transform: rotateY(-90deg) translateZ(42.5px); }
@@ -139,10 +138,9 @@
 
         .roll-btn:active {
             transform: scale(0.95);
-            box-shadow: 0 3px 10px rgba(253, 160, 133, 0.4);
         }
 
-        /* Modal Pop-up Eksklusif (Gaya Kartu Ramalan Mewah) */
+        /* Modal Pop-up Eksklusif */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -232,11 +230,6 @@
             cursor: pointer;
             width: 100%;
             box-shadow: 0 4px 12px rgba(43, 16, 85, 0.3);
-            transition: opacity 0.2s;
-        }
-
-        .close-btn:active {
-            opacity: 0.9;
         }
 
         footer {
@@ -250,7 +243,7 @@
 <body>
 
     <header>
-        <h1>✨ Dadu kasmaran atau galau ✨</h1>
+        <h1>✨ Oracle Dadu Cinta ✨</h1>
         <p class="subtitle">Ungkap misteri asmara melalui lemparan sakral</p>
     </header>
 
@@ -277,7 +270,7 @@
             </div>
         </div>
 
-        <button class="roll-btn" id="rollBtn" onclick="rollDice3D()">kocok aku ✨</button>
+        <button class="roll-btn" id="rollBtn" onclick="rollDice3D()">Lempar Dadu ✨</button>
     </div>
 
     <!-- Modal Pop-up Eksklusif -->
@@ -335,9 +328,9 @@
             const val1 = Math.floor(Math.random() * 6) + 1;
             const val2 = Math.floor(Math.random() * 6) + 1;
 
-            // Putaran putaran tambahan yang lebih banyak agar animasi terasa lambat & dramatis (4-6 putaran penuh)
-            const extraRotX = 360 * (Math.floor(Math.random() * 3) + 4);
-            const extraRotY = 360 * (Math.floor(Math.random() * 3) + 4);
+            // Putaran tambahan dalam sumbu X dan Y agar kubus berputar secara acak 3D penuh
+            const extraRotX = 360 * (Math.floor(Math.random() * 2) + 3);
+            const extraRotY = 360 * (Math.floor(Math.random() * 2) + 3);
 
             const targetRot1 = rotations[val1];
             const targetRot2 = rotations[val2];
@@ -345,7 +338,6 @@
             dice1.style.transform = `rotateX(${targetRot1.x + extraRotX}deg) rotateY(${targetRot1.y + extraRotY}deg)`;
             dice2.style.transform = `rotateX(${targetRot2.x + extraRotX}deg) rotateY(${targetRot2.y + extraRotY}deg)`;
 
-            // Sesuai durasi CSS transisi 2.2 detik
             setTimeout(() => {
                 showModal(val1, val2);
                 rollBtn.disabled = false;
