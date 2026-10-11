@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dadu Hoki atau Sial</title>
+    <style>
+        :root {
+            --primary-color: #ff4b72;
+            --secondary-color: #ff758c;
+            --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            font-size: 0.85rem;
+            color: #fff;
+            opacity: 0.9;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 400px;
+            margin: auto 0;
+        }
+
+        /* Area Dadu */
+        .dice-board {
+            display: flex;
+            gap: 25px;
+            margin: 40px 0;
+            perspective: 1000px;
+        }
+
+        .dice {
+            width: 80px;
+            height: 80px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 10px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+        }
+
+        /* Animasi Mengocok */
+        @keyframes shake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-10px, -10px) rotate(-15deg); }
+            40% { transform: translate(10px, 10px) rotate(15deg); }
+            60% { transform: translate(-10px, 10px) rotate(-10deg); }
+            80% { transform: translate(10px, -10px) rotate(10deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+
+        .dice.rolling {
+            animation: shake 0.6s ease-in-out infinite;
+        }
+
+        /* Titik Dadu (Dot) */
+        .dot {
+            background-color: #333;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            align-self: center;
+            justify-self: center;
+            display: none;
+        }
+
+        /* Posisi Titik Berdasarkan Angka */
+        .dice[data-value="1"] .dot-5 { display: block; }
+        
+        .dice[data-value="2"] .dot-1, 
+        .dice[data-value="2"] .dot-9 { display: block; }
+
+        .dice[data-value="3"] .dot-1, 
+        .dice[data-value="3"] .dot-5, 
+        .dice[data-value="3"] .dot-9 { display: block; }
+
+        .dice[data-value="4"] .dot-1, 
+        .dice[data-value="4"] .dot-3, 
+        .dice[data-value="4"] .dot-7, 
+        .dice[data-value="4"] .dot-9 { display: block; }
+
+        .dice[data-value="5"] .dot-1, 
+        .dice[data-value="5"] .dot-3, 
+        .dice[data-value="5"] .dot-5, 
+        .dice[data-value="5"] .dot-7, 
+        .dice[data-value="5"] .dot-9 { display: block; }
+
+        .dice[data-value="6"] .dot-1, 
+        .dice[data-value="6"] .dot-3, 
+        .dice[data-value="6"] .dot-4, 
+        .dice[data-value="6"] .dot-6, 
+        .dice[data-value="6"] .dot-7, 
+        .dice[data-value="6"] .dot-9 { display: block; }
+
+        /* Tombol Lempar */
+        .roll-btn {
+            background: linear-gradient(135deg, #ff4b72 0%, #ff758c 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(255, 75, 114, 0.4);
+            cursor: pointer;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .roll-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 8px rgba(255, 75, 114, 0.4);
+        }
+
+        /* Modal Pop-up */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #fff;
+            width: 100%;
+            max-width: 320px;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .badge-lucky {
+            background-color: #e1f5fe;
+            color: #0288d1;
+        }
+
+        .badge-unlucky {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .close-btn {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        footer {
+            font-size: 0.75rem;
+            color: #fff;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎲 Perjudian cinta</h1>
+        <p class="subtitle">kocok dadu nasib mu</p>
+    </header>
+
+    <div class="game-container">
+        <div class="dice-board">
+            <!-- Dadu 1 -->
+            <div class="dice" id="dice1" data-value="1">
+                <div class="dot dot-1"></div>
+                <div class="dot dot-2"></div>
+                <div class="dot dot-3"></div>
+                <div class="dot dot-4"></div>
+                <div class="dot dot-5"></div>
+                <div class="dot dot-6"></div>
+                <div class="dot dot-7"></div>
+                <div class="dot dot-8"></div>
+                <div class="dot dot-9"></div>
+            </div>
+            <!-- Dadu 2 -->
+            <div class="dice" id="dice2" data-value="1">
+                <div class="dot dot-1"></div>
+                <div class="dot dot-2"></div>
+                <div class="dot dot-3"></div>
+                <div class="dot dot-4"></div>
+                <div class="dot dot-5"></div>
+                <div class="dot dot-6"></div>
+                <div class="dot dot-7"></div>
+                <div class="dot dot-8"></div>
+                <div class="dot dot-9"></div>
+            </div>
+        </div>
+
+        <button class="roll-btn" id="rollBtn" onclick="rollDice()">Lempar Dadu ✨</button>
+    </div>
+
+    <!-- Modal Pop-up Hasil -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-card">
+            <div id="modalBadgeContainer"></div>
+            <h3 class="modal-title" id="modalTitle">Hasil Dadu</h3>
+            <p class="modal-message" id="modalMessage">Pesan ramalan akan muncul di sini...</p>
+            <button class="close-btn" onclick="closeModal()">Tutup & Coba Lagi</button>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2026 Mobile Dice Game
+    </footer>
+
+    <script>
+        // Kumpulan Ramalan Cinta Angka Ganda (Keberuntungan)
+        const luckyFortunes = [
+            "Angka kembar! Cinta kalian sedang berada di puncak harmoni. Hari ini adalah waktu yang tepat untuk mengungkapkan perasaan.",
+            "Dua sisi yang menyatu sempurna. Hubungan asmaramu dipenuhi hoki, kejutan manis, dan perhatian tulus dari si dia.",
+            "Double luck! Energi cinta mengalir deras. Jika kamu single, bersiaplah bertemu seseorang yang membuat hatiku berdesir.",
+            "Angka ganda yang membawa berkah asmara. Komunikasi berjalan mulus dan ikatan emosional semakin erat.",
+            "Keberuntungan mutlak dalam percintaan! Apa pun yang kamu rencanakan dengan pasangan hari ini akan berjalan lancar dan romantis."
+        ];
+
+        // Kumpulan Ramalan Cinta Angka Tidak Ganda (Kesialan / Tantangan)
+        const unluckyFortunes = [
+            "Hasil berbeda arah. Hati-hati dengan kesalahpahaman kecil dengan pasangan hari ini. Kurangi ego masing-masing.",
+            "Kurang beruntung dalam cinta. Sinyal komunikasi sedang sedikit terganggu, tahan diri untuk tidak memicu perdebatan.",
+            "Momen uji kesabaran asmara. Jangan mudah baper atau cepat percaya pada omongan orang lain tentang hubungan kalian.",
+            "Ada sedikit hambatan kecil dalam urusan pendekatan. Berikan ruang dan waktu dulu untuk dia merenung.",
+            "Hari ini energi percintaan sedang kurang selaras. Hindari mengambil keputusan besar atau terburu-buru menyatakan perasaan."
+        ];
+
+        function getRandomFortune(array) {
+            const randomIndex = Math.floor(Math.random() * array.length);
+            return array[randomIndex];
+        }
+
+        function rollDice() {
+            const dice1 = document.getElementById('dice1');
+            const dice2 = document.getElementById('dice2');
+            const rollBtn = document.getElementById('rollBtn');
+
+            // Nonaktifkan tombol saat animasi berjalan
+            rollBtn.disabled = true;
+            dice1.classList.add('rolling');
+            dice2.classList.add('rolling');
+
+            // Simulasi durasi putaran dadu (0.6 detik)
+            setTimeout(() => {
+                dice1.classList.remove('rolling');
+                dice2.classList.remove('rolling');
+
+                // Hasil acak angka 1 sampai 6
+                const val1 = Math.floor(Math.random() * 6) + 1;
+                const val2 = Math.floor(Math.random() * 6) + 1;
+
+                dice1.setAttribute('data-value', val1);
+                dice2.setAttribute('data-value', val2);
+
+                showModal(val1, val2);
+                rollBtn.disabled = false;
+            }, 600);
+        }
+
+        function showModal(v1, v2) {
+            const overlay = document.getElementById('modalOverlay');
+            const badgeContainer = document.getElementById('modalBadgeContainer');
+            const titleEl = document.getElementById('modalTitle');
+            const messageEl = document.getElementById('modalMessage');
+
+            const isDouble = (v1 === v2);
+
+            titleEl.innerText = `Dadu Keluar: ${v1} & ${v2}`;
+
+            if (isDouble) {
+                badgeContainer.innerHTML = `<span class="modal-badge badge-lucky">✨ Angka Ganda: Keberuntungan Cinta ✨</span>`;
+                messageEl.innerText = getRandomFortune(luckyFortunes);
+            } else {
+                badgeContainer.innerHTML = `<span class="modal-badge badge-unlucky">⚠️ Angka Tidak Ganda: Ujian Asmara ⚠️</span>`;
+                messageEl.innerText = getRandomFortune(unluckyFortunes);
+            }
+
+            overlay.classList.add('active');
+        }
+
+        function closeModal() {
+            const overlay = document.getElementById('modalOverlay');
+            overlay.classList.remove('active');
+        }
+    </script>
+</body>
+</html>
