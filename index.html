@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dadu Hoki atau Sial</title>
+    <title>Ramalan Dadu Cinta 3D</title>
     <style>
         :root {
-            --primary-color: #ff4b72;
-            --secondary-color: #ff758c;
             --bg-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
         }
 
@@ -59,80 +57,73 @@
             margin: auto 0;
         }
 
-        /* Area Dadu */
+        /* Area Papan Dadu 3D */
         .dice-board {
             display: flex;
-            gap: 25px;
+            gap: 35px;
             margin: 40px 0;
-            perspective: 1000px;
+            perspective: 800px;
         }
 
+        /* Struktur Kubus 3D */
         .dice {
             width: 80px;
             height: 80px;
-            background-color: #fff;
-            border-radius: 16px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-            display: grid;
-            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-            padding: 10px;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.5s ease;
+            transition: transform 1s cubic-bezier(0.15, 0.85, 0.35, 1.2);
         }
 
-        /* Animasi Mengocok */
-        @keyframes shake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            20% { transform: translate(-10px, -10px) rotate(-15deg); }
-            40% { transform: translate(10px, 10px) rotate(15deg); }
-            60% { transform: translate(-10px, 10px) rotate(-10deg); }
-            80% { transform: translate(10px, -10px) rotate(10deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
+        .face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            padding: 8px;
+            border: 2px solid #e0e0e0;
         }
 
-        .dice.rolling {
-            animation: shake 0.6s ease-in-out infinite;
-        }
+        /* Posisi Sisi-sisi Kubus 3D */
+        .face-1 { transform: rotateY(0deg) translateZ(40px); }
+        .face-2 { transform: rotateY(180deg) translateZ(40px); }
+        .face-3 { transform: rotateY(-90deg) translateZ(40px); }
+        .face-4 { transform: rotateY(90deg) translateZ(40px); }
+        .face-5 { transform: rotateX(90deg) translateZ(40px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(40px); }
 
-        /* Titik Dadu (Dot) */
+        /* Titik Dot Dadu */
         .dot {
             background-color: #333;
             border-radius: 50%;
-            width: 14px;
-            height: 14px;
+            width: 12px;
+            height: 12px;
             align-self: center;
             justify-self: center;
             display: none;
         }
 
-        /* Posisi Titik Berdasarkan Angka */
-        .dice[data-value="1"] .dot-5 { display: block; }
+        /* Konfigurasi Dot per Angka */
+        /* Angka 1 */
+        .face-1 .dot-5 { display: block; }
         
-        .dice[data-value="2"] .dot-1, 
-        .dice[data-value="2"] .dot-9 { display: block; }
+        /* Angka 2 */
+        .face-2 .dot-1, .face-2 .dot-9 { display: block; }
 
-        .dice[data-value="3"] .dot-1, 
-        .dice[data-value="3"] .dot-5, 
-        .dice[data-value="3"] .dot-9 { display: block; }
+        /* Angka 3 */
+        .face-3 .dot-1, .face-3 .dot-5, .face-3 .dot-9 { display: block; }
 
-        .dice[data-value="4"] .dot-1, 
-        .dice[data-value="4"] .dot-3, 
-        .dice[data-value="4"] .dot-7, 
-        .dice[data-value="4"] .dot-9 { display: block; }
+        /* Angka 4 */
+        .face-4 .dot-1, .face-4 .dot-3, .face-4 .dot-7, .face-4 .dot-9 { display: block; }
 
-        .dice[data-value="5"] .dot-1, 
-        .dice[data-value="5"] .dot-3, 
-        .dice[data-value="5"] .dot-5, 
-        .dice[data-value="5"] .dot-7, 
-        .dice[data-value="5"] .dot-9 { display: block; }
+        /* Angka 5 */
+        .face-5 .dot-1, .face-5 .dot-3, .face-5 .dot-5, .face-5 .dot-7, .face-5 .dot-9 { display: block; }
 
-        .dice[data-value="6"] .dot-1, 
-        .dice[data-value="6"] .dot-3, 
-        .dice[data-value="6"] .dot-4, 
-        .dice[data-value="6"] .dot-6, 
-        .dice[data-value="6"] .dot-7, 
-        .dice[data-value="6"] .dot-9 { display: block; }
+        /* Angka 6 */
+        .face-6 .dot-1, .face-6 .dot-3, .face-6 .dot-4, .face-6 .dot-6, .face-6 .dot-7, .face-6 .dot-9 { display: block; }
 
         /* Tombol Lempar */
         .roll-btn {
@@ -250,39 +241,34 @@
 <body>
 
     <header>
-        <h1>🎲 Perjudian cinta</h1>
-        <p class="subtitle">kocok dadu nasib mu</p>
+        <h1>🎲 Dadu Cinta 3D 💖</h1>
+        <p class="subtitle">Putar dadu 3D dan temukan takdir asmaramu!</p>
     </header>
 
     <div class="game-container">
         <div class="dice-board">
-            <!-- Dadu 1 -->
-            <div class="dice" id="dice1" data-value="1">
-                <div class="dot dot-1"></div>
-                <div class="dot dot-2"></div>
-                <div class="dot dot-3"></div>
-                <div class="dot dot-4"></div>
-                <div class="dot dot-5"></div>
-                <div class="dot dot-6"></div>
-                <div class="dot dot-7"></div>
-                <div class="dot dot-8"></div>
-                <div class="dot dot-9"></div>
+            <!-- Dadu 1 (3D Cube) -->
+            <div class="dice" id="dice1">
+                <div class="face face-1"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-2"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-3"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-4"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-5"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-6"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
             </div>
-            <!-- Dadu 2 -->
-            <div class="dice" id="dice2" data-value="1">
-                <div class="dot dot-1"></div>
-                <div class="dot dot-2"></div>
-                <div class="dot dot-3"></div>
-                <div class="dot dot-4"></div>
-                <div class="dot dot-5"></div>
-                <div class="dot dot-6"></div>
-                <div class="dot dot-7"></div>
-                <div class="dot dot-8"></div>
-                <div class="dot dot-9"></div>
+
+            <!-- Dadu 2 (3D Cube) -->
+            <div class="dice" id="dice2">
+                <div class="face face-1"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-2"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-3"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-4"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-5"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
+                <div class="face face-6"><div class="dot dot-1"></div><div class="dot dot-2"></div><div class="dot dot-3"></div><div class="dot dot-4"></div><div class="dot dot-5"></div><div class="dot dot-6"></div><div class="dot dot-7"></div><div class="dot dot-8"></div><div class="dot dot-9"></div></div>
             </div>
         </div>
 
-        <button class="roll-btn" id="rollBtn" onclick="rollDice()">Lempar Dadu ✨</button>
+        <button class="roll-btn" id="rollBtn" onclick="rollDice3D()">Lempar Dadu 3D ✨</button>
     </div>
 
     <!-- Modal Pop-up Hasil -->
@@ -290,26 +276,24 @@
         <div class="modal-card">
             <div id="modalBadgeContainer"></div>
             <h3 class="modal-title" id="modalTitle">Hasil Dadu</h3>
-            <p class="modal-message" id="modalMessage">Pesan ramalan akan muncul di sini...</p>
+            <p class="modal-message" id="modalMessage">Ramalan cinta muncul di sini...</p>
             <button class="close-btn" onclick="closeModal()">Tutup & Coba Lagi</button>
         </div>
     </div>
 
     <footer>
-        &copy; 2026 Mobile Dice Game
+        &copy; 2026 3D Dice Mobile Game
     </footer>
 
     <script>
-        // Kumpulan Ramalan Cinta Angka Ganda (Keberuntungan)
         const luckyFortunes = [
             "Angka kembar! Cinta kalian sedang berada di puncak harmoni. Hari ini adalah waktu yang tepat untuk mengungkapkan perasaan.",
             "Dua sisi yang menyatu sempurna. Hubungan asmaramu dipenuhi hoki, kejutan manis, dan perhatian tulus dari si dia.",
-            "Double luck! Energi cinta mengalir deras. Jika kamu single, bersiaplah bertemu seseorang yang membuat hatiku berdesir.",
+            "Double luck! Energi cinta mengalir deras. Jika kamu single, bersiaplah bertemu seseorang yang membuat hatimu berdesir.",
             "Angka ganda yang membawa berkah asmara. Komunikasi berjalan mulus dan ikatan emosional semakin erat.",
             "Keberuntungan mutlak dalam percintaan! Apa pun yang kamu rencanakan dengan pasangan hari ini akan berjalan lancar dan romantis."
         ];
 
-        // Kumpulan Ramalan Cinta Angka Tidak Ganda (Kesialan / Tantangan)
         const unluckyFortunes = [
             "Hasil berbeda arah. Hati-hati dengan kesalahpahaman kecil dengan pasangan hari ini. Kurangi ego masing-masing.",
             "Kurang beruntung dalam cinta. Sinyal komunikasi sedang sedikit terganggu, tahan diri untuk tidak memicu perdebatan.",
@@ -318,36 +302,47 @@
             "Hari ini energi percintaan sedang kurang selaras. Hindari mengambil keputusan besar atau terburu-buru menyatakan perasaan."
         ];
 
+        // Matriks rotasi 3D untuk menampilkan setiap sisi angka (1 sampai 6)
+        const rotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 0, y: 180 },
+            3: { x: 0, y: 90 },
+            4: { x: 0, y: -90 },
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
+        };
+
         function getRandomFortune(array) {
             const randomIndex = Math.floor(Math.random() * array.length);
             return array[randomIndex];
         }
 
-        function rollDice() {
+        function rollDice3D() {
             const dice1 = document.getElementById('dice1');
             const dice2 = document.getElementById('dice2');
             const rollBtn = document.getElementById('rollBtn');
 
-            // Nonaktifkan tombol saat animasi berjalan
             rollBtn.disabled = true;
-            dice1.classList.add('rolling');
-            dice2.classList.add('rolling');
 
-            // Simulasi durasi putaran dadu (0.6 detik)
+            // Angka acak 1 - 6
+            const val1 = Math.floor(Math.random() * 6) + 1;
+            const val2 = Math.floor(Math.random() * 6) + 1;
+
+            // Tambahkan rotasi putaran acak penuh (misal 3-5 putaran penuh / 1080 - 1800 derajat)
+            const extraRotX = 360 * (Math.floor(Math.random() * 3) + 3);
+            const extraRotY = 360 * (Math.floor(Math.random() * 3) + 3);
+
+            const targetRot1 = rotations[val1];
+            const targetRot2 = rotations[val2];
+
+            dice1.style.transform = `rotateX(${targetRot1.x + extraRotX}deg) rotateY(${targetRot1.y + extraRotY}deg)`;
+            dice2.style.transform = `rotateX(${targetRot2.x + extraRotX}deg) rotateY(${targetRot2.y + extraRotY}deg)`;
+
+            // Tampilkan pop-up setelah animasi selesai (1 detik sesuai transisi CSS)
             setTimeout(() => {
-                dice1.classList.remove('rolling');
-                dice2.classList.remove('rolling');
-
-                // Hasil acak angka 1 sampai 6
-                const val1 = Math.floor(Math.random() * 6) + 1;
-                const val2 = Math.floor(Math.random() * 6) + 1;
-
-                dice1.setAttribute('data-value', val1);
-                dice2.setAttribute('data-value', val2);
-
                 showModal(val1, val2);
                 rollBtn.disabled = false;
-            }, 600);
+            }, 1000);
         }
 
         function showModal(v1, v2) {
